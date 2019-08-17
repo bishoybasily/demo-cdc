@@ -1,0 +1,55 @@
+#logging:
+#  level:
+#    org:
+#      hibernate:
+#        SQL: DEBUG
+#        type:
+#          descriptor:
+#            sql:
+#              BasicBinder: TRACE
+
+server:
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+    min-response-size: 1024
+  port: ${PORT:8080}
+
+spring:
+
+  jackson:
+    date-format: yyyy-MM-dd'T'HH:mm:ss
+    time-zone: Africa/Cairo
+    default-property-inclusion: non_empty
+    serialization:
+      write-empty-json-arrays: false
+      write-null-map-values: false
+      fail-on-empty-beans: false
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+    parser:
+      allow-non-numeric-numbers: true
+    mapper:
+      default-view-inclusion: false
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_HOST:127.0.0.1}:${DB_PORT:3306}/${DB_NAME:cdc}?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:toor}
+
+  jpa:
+    generate-ddl: true
+    properties:
+      hibernate:
+        current_session_context_class: org.springframework.orm.hibernate5.SpringSessionContext
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        storage_engine: innodb
+        format_sql: false
+        show_sql: true
+        globally_quoted_ids: true
+        enable_lazy_load_no_trans: true
+        generate_statistics: false
+        hbm2ddl:
+          auto: update
