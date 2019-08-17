@@ -17,6 +17,15 @@ server:
 
 spring:
 
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: 2
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+
   jackson:
     date-format: yyyy-MM-dd'T'HH:mm:ss
     time-zone: Africa/Cairo
