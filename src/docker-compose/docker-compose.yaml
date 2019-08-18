@@ -1,0 +1,81 @@
+version: '2.1'
+
+services:
+
+  mysql:
+    container_name: mysql
+    image: mysql:5.7-telnet
+    build: ./build/mysql
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=toor
+    volumes:
+      - ./etc/mysql/conf.d/:/etc/mysql/conf.d
+    healthcheck:
+      test: ["CMD","echo", "'exit'", "|", "telnet", "localhost", "3306"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+
+  zookeeper:
+    container_name: zookeeper
+    image: debezium/zookeeper:0.9-telnet
+    build: ./build/zookeeper
+    ports:
+      - 2181:2181
+      - 2888:2888
+      - 3888:3888
+    healthcheck:
+      test: ["CMD","echo", "'exit'", "|", "telnet", "localhost", "2181"]
+      interval: 5s
+      timeout: 15s
+      retries: 15
+
+  kafka:
+    container_name: kafka
+    image: debezium/kafka:0.9-telnet
+    build: ./build/kafka
+    ports:
+      - 9092:9092
+    environment:
+      - ZOOKEEPER_CONNECT=zookeeper:2181
+    healthcheck:
+      test: ["CMD","echo", "'exit'", "|", "telnet", "localhost", "9092"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+    links:
+      - zookeeper
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+
+  connect:
+    container_name: connect
+    image: debezium/connect:0.9-telnet
+    build: ./build/connect
+    ports:
+      - 8083:8083
+    environment:
+      - GROUP_ID=1
+      - CONFIG_STORAGE_TOPIC=my_connect_configs
+      - OFFSET_STORAGE_TOPIC=my_connect_offsets
+      - STATUS_STORAGE_TOPIC=my_connect_statuses
+      - BOOTSTRAP_SERVERS=kafka:9092
+    healthcheck:
+      test: ["CMD","echo", "'exit'", "|", "telnet", "localhost", "8083"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+    links:
+      - zookeeper
+      - kafka
+      - mysql
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
