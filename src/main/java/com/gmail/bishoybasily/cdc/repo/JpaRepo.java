@@ -32,15 +32,13 @@ public class JpaRepo<T> {
             CriteriaQuery<T> criteriaQuery = criteriaBuilder.createQuery(cls);
             Root<T> root = criteriaQuery.from(cls);
 
-            sorts.stream().map(sort -> {
+            sorts.forEach(sort -> {
 
                 if (sort.dir.equals(Sort.Dir.ASC))
-                    return criteriaBuilder.asc(root.get(sort.prop));
+                    criteriaQuery.getOrderList().add(criteriaBuilder.asc(root.get(sort.prop)));
 
                 if (sort.dir.equals(Sort.Dir.DESC))
-                    return criteriaBuilder.desc(root.get(sort.prop));
-
-                throw new IllegalArgumentException();
+                    criteriaQuery.getOrderList().add(criteriaBuilder.desc(root.get(sort.prop)));
 
             });
 
