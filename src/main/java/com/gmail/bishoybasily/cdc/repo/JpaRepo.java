@@ -22,7 +22,7 @@ public class JpaRepo<T> {
         this.entityManager = entityManager;
     }
 
-    public Flux<T> findAll(List<Sort> sorts, List<Filter> filters) {
+    public Flux<T> findAll(List<Sort> sorts, List<Filter> filters, Page page) {
         return Mono.fromCallable(() -> {
 
             ParameterizedType genericSuperclass = (ParameterizedType) getClass().getGenericSuperclass();
@@ -73,9 +73,23 @@ public class JpaRepo<T> {
 
             });
 
+            typedQuery.setFirstResult(page.index * page.count);
+            typedQuery.setMaxResults(page.count);
+
             return typedQuery;
 
         }).flatMapIterable(TypedQuery::getResultList);
+    }
+
+    static class Page {
+
+        private Integer index;
+        private Integer count;
+
+        public Page(Integer index, Integer count) {
+            this.index = index;
+            this.count = count;
+        }
     }
 
     static class Sort {
@@ -83,20 +97,17 @@ public class JpaRepo<T> {
         private String prop;
         private Dir dir;
 
+        public Sort(String prop, Dir dir) {
+            this.prop = prop;
+            this.dir = dir;
+        }
+
         public String getProp() {
             return prop;
         }
 
-        public void setProp(String prop) {
-            this.prop = prop;
-        }
-
         public Dir getDir() {
             return dir;
-        }
-
-        public void setDir(Dir dir) {
-            this.dir = dir;
         }
 
         enum Dir {
@@ -112,44 +123,39 @@ public class JpaRepo<T> {
         private Class<T> cls;
         private TemporalType temporalType;
 
-        public String getProp() {
-            return prop;
+        public Filter(String prop, Proc proc, T val, Class<T> cls) {
+            this.prop = prop;
+            this.proc = proc;
+            this.val = val;
+            this.cls = cls;
         }
 
-        public void setProp(String prop) {
+        public Filter(String prop, Proc proc, T val, Class<T> cls, TemporalType temporalType) {
             this.prop = prop;
+            this.proc = proc;
+            this.val = val;
+            this.cls = cls;
+            this.temporalType = temporalType;
+        }
+
+        public String getProp() {
+            return prop;
         }
 
         public Proc getProc() {
             return proc;
         }
 
-        public void setProc(Proc proc) {
-            this.proc = proc;
-        }
-
         public Class<T> getCls() {
             return cls;
-        }
-
-        public void setCls(Class<T> cls) {
-            this.cls = cls;
         }
 
         public TemporalType getTemporalType() {
             return temporalType;
         }
 
-        public void setTemporalType(TemporalType temporalType) {
-            this.temporalType = temporalType;
-        }
-
         public T getVal() {
             return val;
-        }
-
-        public void setVal(T val) {
-            this.val = val;
         }
 
         enum Proc {
