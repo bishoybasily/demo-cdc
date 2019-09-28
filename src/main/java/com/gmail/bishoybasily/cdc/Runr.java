@@ -3,6 +3,7 @@ package com.gmail.bishoybasily.cdc;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -17,7 +18,10 @@ public class Runr implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        repositoryUsers.saveAll(Stream.of("usr1", "usr2").map(it -> new User().setName(it)).collect(Collectors.toList()));
+        List<User> users = Stream.of("usr1", "usr2")
+                .map(User::new)
+                .collect(Collectors.toList());
+        repositoryUsers.saveAll(users);
     }
 
 }

@@ -18,6 +18,21 @@ services:
       timeout: 5s
       retries: 15
 
+  elasticsearch:
+    container_name: elasticsearch
+    image: elasticsearch:7.3.2-telnet
+    build: ./build/elasticsearch
+    ports:
+      - 9300:9300
+      - 9200:9200
+    environment:
+      - discovery.type=single-node
+    healthcheck:
+      test: ["CMD","echo", "'exit'", "|", "telnet", "localhost", "9300"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+
   zookeeper:
     container_name: zookeeper
     image: debezium/zookeeper:0.9-telnet
@@ -72,10 +87,13 @@ services:
       - zookeeper
       - kafka
       - mysql
+      - elasticsearch
     depends_on:
       zookeeper:
         condition: service_healthy
       kafka:
         condition: service_healthy
       mysql:
+        condition: service_healthy
+      elasticsearch:
         condition: service_healthy
