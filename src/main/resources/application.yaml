@@ -18,16 +18,19 @@ server:
 spring:
 
   kafka:
+    listener:
+      type: batch
+      ack-mode: manual
     consumer:
       bootstrap-servers: localhost:9092
-      group-id: 2
-      auto-offset-reset: earliest
+      group-id: test-consumer
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-
+      value-deserializer: com.gmail.bishoybasily.cdc.DebeziumEventDeserializer
+      max-poll-records: 10
+      enable-auto-commit: false
 
   jackson:
-    date-format: yyyy-MM-dd'T'HH:mm:ss
+    date-format: yyyy-MM-dd'T'HH:mm:ss:SSS
     time-zone: Africa/Cairo
     default-property-inclusion: non_empty
     serialization:
@@ -44,7 +47,7 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${DB_HOST:127.0.0.1}:${DB_PORT:3306}/${DB_NAME:cdc}?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
+    url: jdbc:mysql://${DB_HOST:127.0.0.1}:${DB_PORT:3306}/${DB_NAME:bank}?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
     username: ${DB_USERNAME:root}
     password: ${DB_PASSWORD:toor}
 
@@ -53,7 +56,7 @@ spring:
     properties:
       hibernate:
         current_session_context_class: org.springframework.orm.hibernate5.SpringSessionContext
-        dialect: org.hibernate.dialect.MySQL8Dialect
+        dialect: org.hibernate.dialect.MySQL57Dialect
         storage_engine: innodb
         format_sql: false
         show_sql: true
@@ -62,3 +65,7 @@ spring:
         generate_statistics: false
         hbm2ddl:
           auto: update
+
+  data:
+    elasticsearch:
+      cluster-nodes: localhost:9300
