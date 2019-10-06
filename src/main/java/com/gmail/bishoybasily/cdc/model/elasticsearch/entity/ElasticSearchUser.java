@@ -1,6 +1,5 @@
 package com.gmail.bishoybasily.cdc.model.elasticsearch.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gmail.bishoybasily.cdc.Constants;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +17,6 @@ public class ElasticSearchUser extends AbstractElasticSearchEntity {
 
     private String name;
 
-    @JsonIgnore
     private Set<ElasticSearchAccount> accounts = new HashSet<>();
 
     public ElasticSearchUser() {

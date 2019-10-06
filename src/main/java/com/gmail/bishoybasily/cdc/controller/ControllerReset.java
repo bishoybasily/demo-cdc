@@ -1,11 +1,14 @@
 package com.gmail.bishoybasily.cdc.controller;
 
+import com.gmail.bishoybasily.cdc.model.elasticsearch.entity.ElasticSearchUser;
+import com.gmail.bishoybasily.cdc.model.elasticsearch.reporitory.ElasticSearchRepositoryUsers;
 import com.gmail.bishoybasily.cdc.model.mysql.entity.JpaAccount;
 import com.gmail.bishoybasily.cdc.model.mysql.entity.JpaUser;
 import com.gmail.bishoybasily.cdc.model.mysql.reporitory.MySqlRepositoryAccounts;
 import com.gmail.bishoybasily.cdc.model.mysql.reporitory.MySqlRepositoryUsers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +23,8 @@ public class ControllerReset {
 
     private final MySqlRepositoryAccounts mySqlRepositoryAccounts;
     private final MySqlRepositoryUsers mySqlRepositoryUsers;
+
+    private final ElasticSearchRepositoryUsers elasticSearchRepositoryUsers;
 
     @PostMapping(produces = MediaType.TEXT_PLAIN_VALUE)
     public String reset() {
@@ -60,6 +65,11 @@ public class ControllerReset {
 
         return "Done";
 
+    }
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public Iterable<ElasticSearchUser> users() {
+        return elasticSearchRepositoryUsers.findAll();
     }
 
 }

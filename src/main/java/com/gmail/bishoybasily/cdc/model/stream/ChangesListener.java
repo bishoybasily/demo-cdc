@@ -43,10 +43,14 @@ public class ChangesListener {
                                     break;
                                 case Constants.Entities.ACCOUNTS:
                                     ElasticSearchAccount account = objectMapper.convertValue(change.getPayload().getAfter(), ElasticSearchAccount.class);
-                                    ElasticSearchUser oldUser = users.findById(account.getUserId()).orElseThrow(RuntimeException::new);
-                                    oldUser.getAccounts().remove(account);
-                                    oldUser.getAccounts().add(account);
-                                    users.save(oldUser);
+                                    ElasticSearchUser oldUser = users.findById(account.getUserId()).orElse(null);
+                                    if (oldUser != null) {
+                                        oldUser.getAccounts().remove(account);
+                                        oldUser.getAccounts().add(account);
+                                        users.save(oldUser);
+                                    } else {
+
+                                    }
                                     break;
                             }
 
@@ -61,10 +65,14 @@ public class ChangesListener {
                                     break;
                                 case Constants.Entities.ACCOUNTS:
                                     ElasticSearchAccount account = objectMapper.convertValue(change.getPayload().getBefore(), ElasticSearchAccount.class);
-                                    ElasticSearchUser oldUser = users.findById(account.getUserId()).orElseThrow(RuntimeException::new);
-                                    oldUser.getAccounts().add(account);
-                                    oldUser.getAccounts().remove(account);
-                                    users.save(oldUser);
+                                    ElasticSearchUser oldUser = users.findById(account.getUserId()).orElse(null);
+                                    if (oldUser != null) {
+                                        oldUser.getAccounts().add(account);
+                                        oldUser.getAccounts().remove(account);
+                                        users.save(oldUser);
+                                    } else {
+
+                                    }
                                     break;
                             }
 
